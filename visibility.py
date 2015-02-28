@@ -15,6 +15,9 @@ def calc_vis_matrix(arr):
             vis_mat[x,y] = whether we can see
     return vis_mat
 
+def vis_mat_to_nx(mat):
+    net = nx.from_numpy_matrix(mat)
+
 if __name__ == "__main__":
     sample = brownian(1000)
 
