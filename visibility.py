@@ -13,6 +13,9 @@ def calc_vis_matrix(arr):
     for x in np.nditer(arr, order="C"):
         #iterate through twice
         curr_val = 0
+        #figure out how to calculate this in O(n^2)
+        #slope = (t_b - t_c) / (t_b - t_a)
+        #y_c < y_b + (y_a - y_b) * slope
         for y in np.nditer(arr, order="C"):
             if y > curr_val:
                 vis_mat[x,y] = 1
