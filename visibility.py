@@ -9,10 +9,14 @@ def brownian(length, loc=0, scale=1):
     return np.cumsum(arr, axis=-1)
 
 def calc_vis_matrix(arr):
-    vis_mat = np.zeros(arr.shape[0], arr.shape[0]) #duplicate
-    for x in the array:
-        for y also in the array:
-            vis_mat[x,y] = whether we can see
+    vis_mat = np.zeros((arr.shape[0], arr.shape[0])) #duplicate
+    for x in np.nditer(arr, order="C"):
+        #iterate through twice
+        curr_val = 0
+        for y in np.nditer(arr, order="C"):
+            if y > curr_val:
+                vis_mat[x,y] = 1
+                curr_val = y
     return vis_mat
 
 def vis_mat_to_nx(mat):
@@ -20,4 +24,6 @@ def vis_mat_to_nx(mat):
 
 if __name__ == "__main__":
     sample = brownian(1000)
-
+    vizmat = calc_vis_matrix(sample)
+    plt.matshow(vizmat)
+    plt.show()
