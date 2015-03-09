@@ -8,25 +8,38 @@ def brownian(length, loc=0, scale=1):
     arr = npr.normal(loc, scale, size=length)
     return np.cumsum(arr, axis=-1)
 
-def calc_vis_matrix(arr):
-    vis_mat = np.zeros((arr.shape[0], arr.shape[0])) #duplicate
-    for x in np.nditer(arr, order="C"):
-        #iterate through twice
-        curr_val = 0
-        #figure out how to calculate this in O(n^2)
-        #slope = (t_b - t_c) / (t_b - t_a)
-        #y_c < y_b + (y_a - y_b) * slope
-        for y in np.nditer(arr, order="C"):
-            if y > curr_val:
-                vis_mat[x,y] = 1
-                curr_val = y
+def calc_vizmat(arr):
+    num_points = arr.shape[0]
+    vis_mat = np.zeros((num_points, num_points)) #duplicate
+    for a in xrange(num_points):
+        max_yc = 0
+        max_tc = 0
+        for b in xrange(a+1, num_points):
+            yc_pred = arr[b] + ((arr[a] - arr[b]) * ((b - max_tc) / (b - a)))
+            if yc_pred > max_yc:
+                vis_mat[a,b] = 1
+                max_yc = arr[b]
+                max_tc = b
     return vis_mat
 
-def vis_mat_to_nx(mat):
-    net = nx.from_numpy_matrix(mat)
+def vizmat_to_net(mat):
+    return nx.from_numpy_matrix(mat)
+
+def plot_vizmat(vizmat, sample):
+    plt.matshow(vizmat)
+    plt.savefig("vizmat.png")
+    plt.close()
+    plt.plot(sample)
+    plt.savefig("sample.png")
+
+def plot_degree_dist(net):
+    degs = sorted(nx.degree(net).values(), reverse=True)
+    plt.loglog(degs)
+    plt.show()
 
 if __name__ == "__main__":
-    sample = brownian(1000)
-    vizmat = calc_vis_matrix(sample)
-    plt.matshow(vizmat)
-    plt.show()
+    sample = brownian(4000)
+    vizmat = calc_vizmat(sample)
+    net = vizmat_to_net(vizmat)
+    #plot_vizmat(vizmat, sample)
+    plot_degree_dist(net)
